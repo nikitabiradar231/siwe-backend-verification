@@ -46,18 +46,23 @@ export async function verifyErc1271Signature(
     // 1. Calculate the Ethereum Signed Message Hash (EIP-191)
     const messageHash = hashMessage(messageString);
 
-    // 2. Query contract's isValidSignature(bytes32, bytes)
-    const magicValue = await publicClient.readContract({
-      address: contractAddress,
-      abi: erc1271Abi,
-      functionName: 'isValidSignature',
-      args: [messageHash, signature],
-    });
+    // 2. Query contract's isValidSignature(bytes32, bytes) with 3s RPC timeout protection
+    const magicValue = await Promise.race([
+      publicClient.readContract({
+        address: contractAddress,
+        abi: erc1271Abi,
+        functionName: 'isValidSignature',
+        args: [messageHash, signature],
+      }),
+      new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('RPC Timeout')), 3000)
+      ),
+    ]);
 
     // 3. Compare with ERC-1271 magic value 0x1626ba7e
-    return magicValue.toLowerCase() === ERC1271_MAGIC_VALUE.toLowerCase();
+    return (magicValue as string)?.toLowerCase() === ERC1271_MAGIC_VALUE.toLowerCase();
   } catch (error) {
-    // Contract might not implement ERC-1271 or call failed
+    // Contract might not implement ERC-1271, network timed out, or call failed
     return false;
   }
 }

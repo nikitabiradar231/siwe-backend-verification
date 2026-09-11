@@ -92,7 +92,7 @@ cp .env.example .env
 | `SIWE_DOMAIN` | Expected server domain for SIWE message verification | `localhost:3000` |
 | `SIWE_URI` | Expected server origin URI | `http://localhost:3000` |
 | `SIWE_CHAIN_ID` | Expected Ethereum chain ID (1 = Mainnet) | `1` |
-| `SESSION_SECRET` | 32+ character random string for Iron-Session encryption | `kitaab_bazaar_super_secret_session_key_32bytes_long` |
+| `SESSION_SECRET` | 32+ character random string for Iron-Session encryption | `YOUR_SESSION_SECRET_HERE` |
 | `NEXT_PUBLIC_RPC_URL` | Ethereum RPC provider URL for ERC-1271 contract queries | `https://eth.llamarpc.com` |
 
 > ⚠️ **Security Policy**: No secrets or private keys are committed to Git. `.env` is listed in `.gitignore`.
